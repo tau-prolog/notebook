@@ -1,0 +1,8 @@
+{"blocks": [
+    {
+        "id": 1,
+        "type": "consult",
+        "content": ":-use_module(library(lists)).\ndouble_me(X, Y) :- append(X, X, Y).",
+        "result": ["True."]
+    }
+]}
