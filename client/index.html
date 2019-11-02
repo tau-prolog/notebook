@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <script>
+        var ws = new WebSocket("ws://localhost:8080");
+        ws.onopen = function() {
+            console.log('Conectado');
+
+            ws.send(JSON.stringify({
+                type: 'consult',
+                id: 234234,
+                content: ''
+            }));
+        };
+
+        ws.onmessage = function(message) {
+            var data = JSON.parse(message.data);
+        };
+
+        ws.onerror = function(data) {
+            console.error('Error', data);
+        };
+
+        ws.onclose = function() {
+            console.error("No server");
+        };
+    </script>
+</head>
+<body>
+    <h1>Tau Prolog</h1>
+</body>
+</html>
