@@ -1,3 +1,5 @@
+// WEBSOCKET
+
 var ws = new WebSocket("ws://localhost:8080");
 
 ws.onopen = function() {
@@ -26,12 +28,42 @@ var tau_mirrors = {};
 var tau_last_selected = -1;
 var tau_last_execution = 0;
 
+
+
+// EVENTS
+
+// onclick event for selecting blocks
 document.addEventListener("click", function() {
     tau_last_selected = -1;
     var selected = document.getElementsByClassName("block-selected");
         for(var i = 0; i < selected.length; i++)
             remove_class(selected[i], "block-selected");
 });
+
+// keypress event for creating blocks
+document.addEventListener("keypress", function(e) {
+    if(tau_last_selected === -1 || !tau_mirrors[tau_last_selected].hasFocus()) {
+        switch(e.key) {
+            // add consult block
+            case "c":
+                add_consult_block({type: "consult", result: [], content: ""});
+                break;
+            // add query block
+            case "q":
+                add_query_block({type: "query", result: [], content: ""});
+                break;
+            // remove block
+            case "x":
+                var elem = document.getElementById("block-" + tau_last_selected);
+                elem.parentNode.removeChild(elem);
+                break;
+        }
+    }
+});
+
+
+
+// FUNCTIONS
 
 function consult(id, content) {
     document.getElementById("block-results-" + id).innerHTML =
