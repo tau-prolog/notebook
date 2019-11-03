@@ -2,7 +2,7 @@
     {
         "id": 1,
         "type": "consult",
-        "content": ":- use_module(library(lists)).\n:- use_module(library(dom)).\n",
+        "content": ":- use_module(library(lists)).\n:- use_module(library(dom)).",
         "result": []
     },
     {

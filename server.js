@@ -12,42 +12,13 @@ var files = {
 };
 
 function json_to_html(data) {
-    var blocks = "";
+    var code = "<script type=\"text/javascript\">window.addEventListener(\"load\", function() {";
     for(var i = 0; i < data.blocks.length; i++) {
         var block = data.blocks[i];
-        blocks += "<div id=\"block-" + block.id + "\" class=\"block\">";
-        blocks += "<div class=\"block-info\"><div class=\"block-type\">#" + block.id + " " + block.type + " block</div></div>";
-        blocks += "<div id=\"block-content-" + block.id + "\" class=\"block-content block-" + block.type + "\">";
-        blocks += block.content;
-        blocks += "</div>";
-        blocks += "<div class=\"block-actions\">";
-        if(block.type === "consult") {
-            blocks += "<input type=\"button\" class=\"block-action-button block-action-consult\" value=\"Consult\" onClick=\"consult(" + block.id + ", mirror_" + block.id + ".getValue());\" />";
-        } else if(block.type === "query") {
-            blocks += "<input type=\"button\" class=\"block-action-button block-action-query\" value=\"Query\" onClick=\"query(" + block.id + ", mirror_" + block.id + ".getValue());\" />";
-            blocks += "<input type=\"button\" class=\"block-action-button block-action-answer\" value=\"Answer\" onClick=\"answer(" + block.id + ");\" />";
-        }
-        blocks += "</div>";
-        blocks += "<div id=\"block-results-" + block.id + "\" class=\"block-results\">";
-        for(var j = 0; j < block.result.length; j++) {
-            blocks += "<div class=\"block-result\">" + block.result[j] + "</div>";
-        }
-        blocks += "</div>";
-        blocks += "</div>";
-        blocks += `<script type="text/javascript">
-        var block = document.getElementById("block-content-${block.id}");
-        var value = block.innerHTML;
-        block.innerHTML = "";
-        var mirror_${block.id} = CodeMirror(block, {
-            value: value,
-            lineNumbers: false,
-            theme: "tau",
-            mode: "prolog"
-        });
-        mirror_${block.id}.setSize("100%", "100%");
-        </script>`;
+        code += "add_" + block.type + "_block(" + JSON.stringify(block) + ");";
     }
-    return blocks;
+    code += "});</script>";
+    return code;
 }
 
 function html_to_json(data) {
@@ -99,7 +70,13 @@ var http_server = http.createServer(function(req, res) {
                 .replace(/\(\$content\)/g, blocks)
                 .replace(/\(\$dirname\)/g, __dirname));
             res.end();
-        // if pathname is another file
+        // if pathname is an image
+        } else if([".png", ".jpg", ".gif", ".jpeg"].indexOf(path.extname(pathname)) !== -1) {
+            var extension = path.extname(pathname).substr(1);
+            res.writeHead(200, {"Content-Type": "image/" + extension});
+            res.write(fs.readFileSync(pathname), "binary");
+            res.end();
+        // if pathname is a plain-text file
         } else {
             var extension = path.extname(pathname).substr(1);
             res.writeHead(200, {"Content-Type": "text/" + extension});
@@ -133,34 +110,41 @@ ws_server.on('request', function(request) {
         var result = "";
         // consult block
         if(data.type === "consult") {
-            result = thread.consult(data.content).toString();
+            var raw_result = thread.consult(data.content);
+            result = pl.format_answer(raw_result, thread);
             var warnings = thread.get_warnings();
             for(var i = 0; i < warnings.length; i++)
-                result += "<br />" + warnings[i];
+                result += "<br />" + warnings[i].toString();
             // send response
             connection.send(JSON.stringify({
                 type: data.type,
                 id: data.id,
-                content: result
+                content: result,
+                status: raw_result === true
             }));
+        // query block
         } else if(data.type === "query") {
-            result = thread.query(data.content).toString();
+            var raw_result = thread.query(data.content);
+            result = pl.format_answer(raw_result, thread);
             var warnings = thread.get_warnings();
             for(var i = 0; i < warnings.length; i++)
-                result += "<br />" + warnings[i];
+                result += "<br />" + warnings[i].toString();
             // send response
             connection.send(JSON.stringify({
                 type: data.type,
                 id: data.id,
-                content: result
+                content: result,
+                status: raw_result === true
             }));
+        // answer block
         } else if(data.type === "answer") {
             thread.answer(function(answer) {
                 // send response
                 connection.send(JSON.stringify({
                     type: data.type,
                     id: data.id,
-                    content: pl.format_answer(answer)
+                    content: pl.format_answer(answer, thread),
+                    status: !pl.type.is_error(answer) && answer != null && answer !== false
                 }));
             });
         }

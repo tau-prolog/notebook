@@ -5,6 +5,7 @@
 		<meta name="description" content="Tau Prolog: A Prolog interpreter in JavaScript." />
 		<meta name="author" content="Tau Prolog" />
         <meta name="keywords" content="Prolog, JavaScript, Interpreter, Logic, Programming" />
+        <meta charset="UTF-8" />
         <script src="https://kit.fontawesome.com/f8cf35179e.js" crossorigin="anonymous"></script>
         <!-- Codemirror -->
 		<script src="/:($dirname)/client/js/codemirror/lib/codemirror.js"></script>
@@ -16,6 +17,12 @@
         <script src="/:($dirname)/client/js/notebook.js"></script>
 	</head>
 	<body>
+        <div class="header">
+                <div class="container">
+                    <img id="header-logo" src="/:($dirname)/client/img/header.png" alt="Tau Prolog">
+                </div>
+            </div>
+        </div>
         <div class="container">
             <div class="notebook">
                 <div id="notebook-container">($content)</div>

@@ -21,6 +21,15 @@ a:hover {
     margin: 0px auto;
 }
 
+.header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #eae2e5;
+}
+
+#header-logo {
+    margin: 10px 0px;
+}
+
 .listing {
     background: white;
     margin: 50px 0;
@@ -56,7 +65,7 @@ a:hover {
     padding: 20px;
 }
 
-.notebook .block:hover {
+.notebook .block-selected {
     background-color: #f9f5fb;
 }
 
@@ -81,9 +90,22 @@ a:hover {
 
 .notebook .block-result {
     background-color: #ffffff;
-    border: 1px solid #eae2e5;
-    margin-bottom: 10px;
+    border-left: 5px solid #eae2e5;
+    font-family: "monospace", "arial", "verdana";
     padding: 10px;
+    margin: 5px 0;
+}
+
+.notebook .block-result-success {
+    background-color: #e3ffd7;
+    border-color: #55694d;
+    color: #55694d;
+}
+
+.notebook .block-result-error {
+    background-color: #ffeaea;
+    border-color: #694d4d;
+    color: #694d4d;
 }
 
 .notebook .block-actions {
@@ -97,13 +119,12 @@ a:hover {
     border-radius: 2px;
     color: #ffffff;
     cursor: pointer;
-    font-size: 17px;
+    font-size: 15px;
     font-family: arial, verdana, "trebuchet ms";
     font-weight: bold;
     margin-left: 10px;
-    padding: 5px 10px;
+    padding: 7px 10px;
     text-align: center;
-    width: 150px;
 }
 
 .notebook .block-action-button:hover {
