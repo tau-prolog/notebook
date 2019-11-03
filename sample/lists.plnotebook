@@ -1,0 +1,20 @@
+{"blocks": [
+    {
+        "id": 1,
+        "type": "consult",
+        "content": ":- use_module(library(lists)).\n:- use_module(library(dom)).\n",
+        "result": []
+    },
+    {
+        "id": 2,
+        "type": "consult",
+        "content": "double_me(X, Y) :- append(X, X, Y).",
+        "result": []
+    },
+    {
+        "id": 3,
+        "type": "query",
+        "content": "double_me([1,2,3], Y).",
+        "result": []
+    }
+]}

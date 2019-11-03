@@ -1,0 +1,144 @@
+body {
+    background-color: #fafafa;
+    font-size: 17px;
+    font-family: arial, verdana, "trebuchet ms";
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: #7b56b9;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #7b56b9;
+    text-decoration: underline;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0px auto;
+}
+
+.listing {
+    background: white;
+    margin: 50px 0;
+}
+
+#listing-container {
+    border: 1px solid #eae2e5;
+    border-top: none;
+}
+
+#listing-container > div {
+    border-top: 1px solid #eae2e5;
+    color: #ad97b0;
+    padding: 10px;
+}
+
+#listing-container > div:hover {
+    background-color: #f6effa;
+}
+
+.notebook {
+    background: white;
+    margin: 50px 0;
+}
+
+#notebook-container {
+    border: 1px solid #eae2e5;
+    padding: 20px;
+}
+
+.notebook .block {
+    border: 1px solid #ffffff;
+    padding: 20px;
+}
+
+.notebook .block:hover {
+    background-color: #f9f5fb;
+}
+
+.notebook .block-content {
+    background-color: #ffffff;
+    border: 1px solid #eae2e5;
+    padding: 10px;
+}
+
+.notebook .block-info {
+    overflow: hidden;
+}
+
+.notebook .block-type {
+    background-color: #eae2e5;
+    color: #7b56b9;
+    font-size: 15px;
+    float: left;
+    text-align: center;
+    padding: 5px 10px;
+}
+
+.notebook .block-result {
+    background-color: #ffffff;
+    border: 1px solid #eae2e5;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.notebook .block-actions {
+    padding: 10px 0px;
+    text-align: right;
+}
+
+.notebook .block-action-button {
+    background-color: #3f81a0;
+    border: 1px solid #205269;
+    border-radius: 2px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 17px;
+    font-family: arial, verdana, "trebuchet ms";
+    font-weight: bold;
+    margin-left: 10px;
+    padding: 5px 10px;
+    text-align: center;
+    width: 150px;
+}
+
+.notebook .block-action-button:hover {
+    background-color: #5faace;
+}
+
+.notebook .block-action-button:active {
+    background-color: #205269;
+    outline: none;
+}
+
+.notebook .block-action-query {
+    background-color: #3f81a0;
+    border: 1px solid #205269;
+}
+
+.notebook .block-action-query:hover {
+    background-color: #5faace;
+}
+
+.notebook .block-action-query:active {
+    background-color: #205269;
+    outline: none;
+}
+
+.notebook .block-action-answer {
+    background-color: #5ba03f;
+    border: 1px solid #31641d;
+}
+
+.notebook .block-action-answer:hover {
+    background-color: #70c051;
+}
+
+.notebook .block-action-answer:active {
+    background-color: #31641d;
+    outline: none;
+}
