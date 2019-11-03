@@ -8,7 +8,8 @@ ws.onmessage = function(message) {
     var data = JSON.parse(message.data);
     var result = document.getElementById("block-results-" + data.id);
     var status = data.status ? "success" : "error"
-    result.innerHTML += "<div class=\"block-result block-result-" + status + "\">" + data.content + "</div>";
+    result.innerHTML += "<div class=\"block-result block-result-" + status + "\">" +
+        "<span class=\"block-result-execution-order\">[" + (++tau_last_execution) + "]</span><span>" + data.content + "</span></div>";
 };
 
 ws.onerror = function(data) {
@@ -22,6 +23,7 @@ ws.onclose = function() {
 var last_tau_block_id = 0;
 var tau_mirrors = {};
 var tau_last_selected = -1;
+var tau_last_execution = 0;
 
 document.addEventListener("click", function() {
     tau_last_selected = -1;
