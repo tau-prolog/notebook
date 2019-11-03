@@ -102,7 +102,7 @@ a:hover {
 
 .notebook .block-result-execution-order {
     background-color: #eae2e5;
-    color: #ffffff;
+    color: #000000;
     display: inline-block;
     font-size: 13px;
     font-weight: bold;
@@ -117,6 +117,7 @@ a:hover {
 
 .notebook .block-result-success .block-result-execution-order {
     background-color: #55694d;
+    color: #ffffff;
 }
 
 .notebook .block-result-error {
@@ -127,6 +128,7 @@ a:hover {
 
 .notebook .block-result-error .block-result-execution-order {
     background-color: #694d4d;
+    color: #ffffff;
 }
 
 .notebook .block-actions {

@@ -120,6 +120,7 @@ ws_server.on('request', function(request) {
                 type: data.type,
                 id: data.id,
                 content: result,
+                execution: data.execution,
                 status: raw_result === true
             }));
         // query block
@@ -134,6 +135,7 @@ ws_server.on('request', function(request) {
                 type: data.type,
                 id: data.id,
                 content: result,
+                execution: data.execution,
                 status: raw_result === true
             }));
         // answer block
@@ -144,6 +146,7 @@ ws_server.on('request', function(request) {
                     type: data.type,
                     id: data.id,
                     content: pl.format_answer(answer, thread),
+                    execution: data.execution,
                     status: !pl.type.is_error(answer) && answer != null && answer !== false
                 }));
             });

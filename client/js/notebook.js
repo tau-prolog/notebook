@@ -7,9 +7,10 @@ ws.onopen = function() {
 ws.onmessage = function(message) {
     var data = JSON.parse(message.data);
     var result = document.getElementById("block-results-" + data.id);
-    var status = data.status ? "success" : "error"
-    result.innerHTML += "<div class=\"block-result block-result-" + status + "\">" +
-        "<span class=\"block-result-execution-order\">[" + (++tau_last_execution) + "]</span><span>" + data.content + "</span></div>";
+    var status = data.status ? "success" : "error";
+    var node = document.getElementById("block-result-" + data.execution);
+    add_class(node, "block-result-" + status);
+    node.innerHTML = "<span class=\"block-result-execution-order\">[" + data.execution + "]</span><span>" + data.content + "</span></div>";
 };
 
 ws.onerror = function(data) {
@@ -33,28 +34,35 @@ document.addEventListener("click", function() {
 });
 
 function consult(id, content) {
-    document.getElementById("block-results-" + id).innerHTML = "";
+    document.getElementById("block-results-" + id).innerHTML =
+        "<div id=\"block-result-" + (++tau_last_execution) + "\" class=\"block-result\"><span class=\"block-result-execution-order\">[*]</span><span>...</span></div>";
     ws.send(JSON.stringify({
         type: "consult",
         id: id,
-        content: content
+        content: content,
+        execution: tau_last_execution
     }));
 }
 
 function query(id, content) {
-    document.getElementById("block-results-" + id).innerHTML = "";
+    document.getElementById("block-results-" + id).innerHTML =
+        "<div id=\"block-result-" + (++tau_last_execution) + "\" class=\"block-result\"><span class=\"block-result-execution-order\">[*]</span><span>...</span></div>";
     ws.send(JSON.stringify({
         type: "query",
         id: id,
-        content: content
+        content: content,
+        execution: tau_last_execution
     }));
 }
 
 function answer(id) {
+    var result = document.getElementById("block-results-" + id);
+    result.innerHTML += "<div id=\"block-result-" + (++tau_last_execution) + "\" class=\"block-result\"><span class=\"block-result-execution-order\">[*]</span><span>...</span></div>";
     ws.send(JSON.stringify({
         type: "answer",
         id: id,
-        content: ""
+        content: "",
+        execution: tau_last_execution
     }));
 }
 
