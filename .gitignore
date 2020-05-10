@@ -1,6 +1,3 @@
-client/css/codemirror.css
-client/js/codemirror/
-
 # Logs
 logs
 *.log
