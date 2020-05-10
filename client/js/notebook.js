@@ -10,8 +10,12 @@ ws.onmessage = function(message) {
     var data = JSON.parse(message.data);
     if(data.type === "save") {
 
-    } else {
+    } else if(data.type === "markdown") {
         var result = document.getElementById("block-results-" + data.id);
+        result.innerHTML = data.content;
+        document.getElementById("block-editor-" + data.id).style.display = "none";
+        document.getElementById("block-results-" + data.id).style.display = "block";
+    } else {
         var status = data.status ? "success" : "error";
         var node = document.getElementById("block-result-" + data.execution);
         node.setAttribute("data-result-type", status);
@@ -73,6 +77,15 @@ document.addEventListener("keypress", function(e) {
                     document.getElementById("block-"+last_tau_block_id).click();
                 }
                 break;
+            // change block type to markdown
+            case "m":
+                if(block !== null) {
+                    var content = tau_mirrors[id].getValue();
+                    add_markdown_block({type: "markdown", result: [], content: content, before: id}, false);
+                    block.parentNode.parentNode.removeChild(block.parentNode);
+                    document.getElementById("block-"+last_tau_block_id).click();
+                }
+                break;
             // add block before
             case "a":
                 add_consult_block({type: "consult", result: [], content: "", before: id});
@@ -86,6 +99,10 @@ document.addEventListener("keypress", function(e) {
             // edit block
             case "Enter":
                 if(!e.ctrlKey && block !== null) {
+                    if(block_type === "markdown") {
+                        document.getElementById("block-editor-" + id).style.display = "block";
+                        document.getElementById("block-results-" + id).style.display = "none";
+                    }
                     tau_mirrors[id].focus();
                 }
                 break;
@@ -108,6 +125,8 @@ document.addEventListener("keypress", function(e) {
                 consult(id, tau_mirrors[id].getValue());
             else if(block_type === "query")
                 query(id, tau_mirrors[id].getValue());
+            else if(block_type === "markdown")
+                markdown(id, tau_mirrors[id].getValue());
         // next answer
         } else if(e.altKey && e.key === "," || e.key === "," || e.key === ";") {
             if(block_type === "query")
@@ -190,6 +209,14 @@ function answer(id) {
     }));
 }
 
+function markdown(id, content) {
+    ws.send(JSON.stringify({
+        type: "markdown",
+        id: id,
+        content: content
+    }));
+}
+
 function save() {
     ws.send(JSON.stringify({
         path: "." + window.location.pathname,
@@ -206,9 +233,9 @@ function add_consult_block(data) {
     html += "<div id=\"block-content-" + id + "\" class=\"block-content block-" + data.type + "\">";
     html += data.content;
     html += "</div>";
-    html += "<div class=\"block-actions\">";
+    // html += "<div class=\"block-actions\">";
     // html += "<input type=\"button\" class=\"block-action-button block-action-consult\" value=\"Consult\" onClick=\"consult(" + id + ", tau_mirrors[" + id + "].getValue());\" />";
-    html += "</div>";
+    // html += "</div>";
     html += "<div id=\"block-results-" + id + "\" class=\"block-results\">";
     for(var j = 0; j < data.result.length; j++) {
         html += "<div data-result-type=\"" + data.result[j].type + "\" class=\"block-result block-result-" + data.result[j].type + "\"><span class=\"block-result-execution-order\">[" + data.result[j].id + "]</span><span class=\"block-result-content\">" + data.result[j].content + "</span></div>";
@@ -226,10 +253,10 @@ function add_query_block(data) {
     html += "<div id=\"block-content-" + id + "\" class=\"block-content block-" + data.type + "\">";
     html += data.content;
     html += "</div>";
-    html += "<div class=\"block-actions\">";
+    // html += "<div class=\"block-actions\">";
     // html += "<input type=\"button\" class=\"block-action-button block-action-query\" value=\"Query\" onClick=\"query(" + id + ", tau_mirrors[" + id + "].getValue());\" />";
     // html += "<input type=\"button\" class=\"block-action-button block-action-answer\" value=\"Next answer\" onClick=\"answer(" + id + ");\" />";
-    html += "</div>";
+    // html += "</div>";
     html += "<div id=\"block-results-" + id + "\" class=\"block-results\">";
     for(var j = 0; j < data.result.length; j++) {
         html += "<div data-result-type=\"" + data.result[j].type + "\" class=\"block-result block-result-" + data.result[j].type + "\"><span class=\"block-result-execution-order\">[" + data.result[j].id + "]</span><span class=\"block-result-content\">" + data.result[j].content + "</span></div>";
@@ -239,7 +266,23 @@ function add_query_block(data) {
     add_block(id, data, html);
 }
 
-function add_block(id, data, html) {
+function add_markdown_block(data, editor) {
+    var editor = editor !== undefined ? editor : true;
+    var html = "";
+    var id = ++last_tau_block_id;
+    html += "<div id=\"block-" + id + "\" onfocus=\"focus_block(" + id + ");\" tabindex=\"0\" data-block-type=\"markdown\" class=\"block\">";
+    html += "<div id=\"block-editor-" + id + "\">";
+    html += "<div class=\"block-info\"><div class=\"block-type\">" + data.type + "</div></div>";
+    html += "<div id=\"block-content-" + id + "\" class=\"block-content block-" + data.type + "\">";
+    html += data.content;
+    html += "</div></div>";
+    html += "<div " + (editor ? "" : "style=\"display:none;\"") + " id=\"block-results-" + id + "\" class=\"block-result block-result-markdown\">" + data.result + "</div>";
+    html += "</div>";
+    add_block(id, data, html, editor);
+}
+
+function add_block(id, data, html, editor) {
+    var editor = editor !== undefined ? editor : false;
     var container = document.getElementById("notebook-container");
     var div = document.createElement("div");
     div.innerHTML = html;
@@ -274,6 +317,8 @@ function add_block(id, data, html) {
                     consult(id, instance.getValue());
                 else if(block_type === "query")
                     query(id, instance.getValue());
+                else if(block_type === "markdown")
+                    markdown(id, instance.getValue());
                 block.focus();
             },
             "Ctrl-,": function(_) {
@@ -294,6 +339,8 @@ function add_block(id, data, html) {
         add_class(block, "block-selected");
         e.stopPropagation();
     });
+    if(editor === true)
+        document.getElementById("block-editor-" + id).style.display = "none";
 }
 
 function focus_block(id) {
@@ -323,19 +370,24 @@ function notebook_to_json() {
         var id = parseInt(blocks[i].getAttribute("id").replace("block-", ""));
         var block_type = blocks[i].getAttribute("data-block-type");
         var content = tau_mirrors[id].getValue();
-        var result = [];
-        var result_blocks = blocks[i].getElementsByClassName("block-result");
-        for(var j = 0; j < result_blocks.length; j++) {
-            var execution_order = parseInt(result_blocks[j]
-                .getElementsByClassName("block-result-execution-order")[0]
-                .innerHTML.replace("[", "").replace("]", ""));
-            var result_content = result_blocks[j].getElementsByClassName("block-result-content")[0].innerHTML;
-            var result_type = result_blocks[j].getAttribute("data-result-type");
-            result.push({
-                id: execution_order,
-                content: result_content,
-                type: result_type
-            });
+        var result;
+        if(block_type === "markdown") {
+            result = document.getElementById("block-results-"+id).innerHTML;
+        } else {
+            result = [];
+            var result_blocks = blocks[i].getElementsByClassName("block-result");
+            for(var j = 0; j < result_blocks.length; j++) {
+                var execution_order = parseInt(result_blocks[j]
+                    .getElementsByClassName("block-result-execution-order")[0]
+                    .innerHTML.replace("[", "").replace("]", ""));
+                var result_content = result_blocks[j].getElementsByClassName("block-result-content")[0].innerHTML;
+                var result_type = result_blocks[j].getAttribute("data-result-type");
+                result.push({
+                    id: execution_order,
+                    content: result_content,
+                    type: result_type
+                });
+            }
         }
         object.blocks.push({
             id: i+1,

@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "codemirror": "^5.53.2",
+    "markdown-it": "^10.0.0",
     "tau-prolog": "^0.2.81",
     "websocket": "^1.0.31"
   }

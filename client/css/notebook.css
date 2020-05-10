@@ -101,6 +101,14 @@ a:hover {
     padding: 5px 0;
 }
 
+.notebook .block-result.block-result-markdown {
+    background-color: transparent !important;
+    border: 0 !important;
+    font-family: "arial", "verdana", "trebuchet ms" !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
 .notebook .block-result > span {
     padding: 5px;
 }

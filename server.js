@@ -2,9 +2,10 @@ var http = require('http');
 var url = require('url');
 var fs = require('fs');
 var path = require('path');
+var MarkdownIt = require('markdown-it');
+var WebSocketServer = require('websocket').server;
 var pl = require('tau-prolog');
 require('tau-prolog/modules/lists')(pl);
-var WebSocketServer = require('websocket').server;
 
 var tau_version = pl.version.major + "." + pl.version.minor + "." + pl.version.patch;
 
@@ -97,6 +98,7 @@ ws_server.on('request', function(request) {
     var connection = request.accept(null, request.origin);
     var session = pl.create();
     var threads = {};
+    var md = new MarkdownIt();
 
     connection.on('message', function(message) {
         if(message.type !== 'utf8') {
@@ -150,6 +152,15 @@ ws_server.on('request', function(request) {
                     status: !pl.type.is_error(answer) && answer != null && answer !== false
                 }));
             });
+        // markdown block
+        } else if(data.type === "markdown") {
+            // send response
+            connection.send(JSON.stringify({
+                type: data.type,
+                id: data.id,
+                content: md.render(data.content),
+                status: true
+            }));
         // save
         } else if(data.type === "save") {
             try {
