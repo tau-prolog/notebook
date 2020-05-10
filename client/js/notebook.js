@@ -48,6 +48,9 @@ document.addEventListener("click", function() {
 // keypress event for creating blocks
 document.addEventListener("keypress", function(e) {
     if(tau_last_selected === -1 || !tau_mirrors[tau_last_selected].hasFocus()) {
+        var id = tau_last_selected;
+        var block = document.getElementById("block-"+id);
+        var block_type = block.getAttribute("data-block-type");
         switch(e.key) {
             // add consult block
             case "c":
@@ -59,9 +62,17 @@ document.addEventListener("keypress", function(e) {
                 break;
             // remove block
             case "x":
-                var elem = document.getElementById("block-" + tau_last_selected);
-                elem.parentNode.removeChild(elem);
+                block.parentNode.removeChild(elem);
                 break;
+        }
+        if(e.ctrlKey && e.key === "Enter") {
+            if(block_type === "consult")
+                consult(id, tau_mirrors[id].getValue());
+            else if(block_type === "query")
+                query(id, tau_mirrors[id].getValue());
+        } else if(e.altKey && e.key === "," || e.key === "," || e.key === ";") {
+            if(block_type === "query")
+                answer(id);
         }
     }
 });
@@ -114,13 +125,13 @@ function save() {
 function add_consult_block(data) {
     var html = "";
     var id = ++last_tau_block_id;
-    html += "<div id=\"block-" + id + "\" data-block-type=\"consult\" class=\"block\">";
+    html += "<div id=\"block-" + id + "\" onfocus=\"focus_block(" + id + ");\" tabindex=\"0\" data-block-type=\"consult\" class=\"block\">";
     html += "<div class=\"block-info\"><div class=\"block-type\">" + data.type + "</div></div>";
     html += "<div id=\"block-content-" + id + "\" class=\"block-content block-" + data.type + "\">";
     html += data.content;
     html += "</div>";
     html += "<div class=\"block-actions\">";
-    html += "<input type=\"button\" class=\"block-action-button block-action-consult\" value=\"Consult\" onClick=\"consult(" + id + ", tau_mirrors[" + id + "].getValue());\" />";
+    // html += "<input type=\"button\" class=\"block-action-button block-action-consult\" value=\"Consult\" onClick=\"consult(" + id + ", tau_mirrors[" + id + "].getValue());\" />";
     html += "</div>";
     html += "<div id=\"block-results-" + id + "\" class=\"block-results\">";
     for(var j = 0; j < data.result.length; j++) {
@@ -134,14 +145,14 @@ function add_consult_block(data) {
 function add_query_block(data) {
     var html = "";
     var id = ++last_tau_block_id;
-    html += "<div id=\"block-" + id + "\" data-block-type=\"query\" class=\"block\">";
+    html += "<div id=\"block-" + id + "\" onfocus=\"focus_block(" + id + ");\" tabindex=\"0\" data-block-type=\"query\" class=\"block\">";
     html += "<div class=\"block-info\"><div class=\"block-type\">" + data.type + "</div></div>";
     html += "<div id=\"block-content-" + id + "\" class=\"block-content block-" + data.type + "\">";
     html += data.content;
     html += "</div>";
     html += "<div class=\"block-actions\">";
-    html += "<input type=\"button\" class=\"block-action-button block-action-query\" value=\"Query\" onClick=\"query(" + id + ", tau_mirrors[" + id + "].getValue());\" />";
-    html += "<input type=\"button\" class=\"block-action-button block-action-answer\" value=\"Next answer\" onClick=\"answer(" + id + ");\" />";
+    // html += "<input type=\"button\" class=\"block-action-button block-action-query\" value=\"Query\" onClick=\"query(" + id + ", tau_mirrors[" + id + "].getValue());\" />";
+    // html += "<input type=\"button\" class=\"block-action-button block-action-answer\" value=\"Next answer\" onClick=\"answer(" + id + ");\" />";
     html += "</div>";
     html += "<div id=\"block-results-" + id + "\" class=\"block-results\">";
     for(var j = 0; j < data.result.length; j++) {
@@ -163,7 +174,25 @@ function add_block(id, data, html) {
         value: data.content,
         lineNumbers: false,
         theme: "tau",
-        mode: "prolog"
+        mode: "prolog",
+        tabindex: -1,
+        extraKeys: {
+            "Ctrl-Enter": function(instance) {
+                var block = document.getElementById("block-"+id);
+                var block_type = block.getAttribute("data-block-type");
+                if(block_type === "consult")
+                    consult(id, instance.getValue());
+                else if(block_type === "query")
+                    query(id, instance.getValue());
+                block.focus();
+            },
+            "Ctrl-,": function(_) {
+                var block = document.getElementById("block-"+id);
+                var block_type = block.getAttribute("data-block-type");
+                if(block_type === "query")
+                    answer(id);
+            }
+        }
     });
     tau_mirrors[id].setSize("100%", "100%");
     var block = document.getElementById("block-" + id);
@@ -175,6 +204,15 @@ function add_block(id, data, html) {
         add_class(block, "block-selected");
         e.stopPropagation();
     });
+}
+
+function focus_block(id) {
+    tau_last_selected = id;
+    var block = document.getElementById("block-"+id);
+    var selected = document.getElementsByClassName("block-selected");
+    for(var i = 0; i < selected.length; i++)
+        remove_class(selected[i], "block-selected");
+    add_class(block, "block-selected");
 }
 
 function add_class(elem, classname) {

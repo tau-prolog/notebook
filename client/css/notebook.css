@@ -65,6 +65,10 @@ a:hover {
     padding: 20px;
 }
 
+.notebook .block:focus {
+    outline: none;
+}
+
 .notebook .block-selected {
     background-color: #f9f5fb;
 }
