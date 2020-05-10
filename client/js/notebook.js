@@ -326,6 +326,10 @@ function add_block(id, data, html, editor) {
                 var block_type = block.getAttribute("data-block-type");
                 if(block_type === "query")
                     answer(id);
+            },
+            "Esc": function(_) {
+                var block = document.getElementById("block-"+id);
+                block.focus();
             }
         }
     });
