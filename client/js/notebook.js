@@ -26,6 +26,9 @@ ws.onerror = function(data) {
 
 ws.onclose = function() {
     console.error("No server");
+    var version = document.getElementById("tau-prolog-version");""
+    version.innerHTML = "The connection to the server has been lost";
+    add_class(version, "noserver");
 };
 
 var last_tau_block_id = 0;

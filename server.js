@@ -6,6 +6,8 @@ var pl = require('tau-prolog');
 require('tau-prolog/modules/lists')(pl);
 var WebSocketServer = require('websocket').server;
 
+var tau_version = pl.version.major + "." + pl.version.minor + "." + pl.version.patch;
+
 var files = {
     listing: fs.readFileSync("./client/html/listing.html"),
     notebook: fs.readFileSync("./client/html/notebook.html")
@@ -52,6 +54,7 @@ var http_server = http.createServer(function(req, res) {
             " <a href=\"" + pathname + "/" + file + "\">" + file + "</a></div>").join("");
         res.writeHead(200, {"Content-Type": "text/html"});
         res.write(files.listing.toString()
+            .replace(/\(\$version\)/g, tau_version)
             .replace(/\(\$content\)/g, ls)
             .replace(/\(\$dirname\)/g, __dirname));
         res.end();
@@ -63,6 +66,7 @@ var http_server = http.createServer(function(req, res) {
             var blocks = json_to_html(data);
             res.writeHead(200, {"Content-Type": "text/html"});
             res.write(files.notebook.toString()
+                .replace(/\(\$version\)/g, tau_version)
                 .replace(/\(\$content\)/g, blocks)
                 .replace(/\(\$dirname\)/g, __dirname));
             res.end();

@@ -191,3 +191,14 @@ a:hover {
     background-color: #31641d;
     outline: none;
 }
+
+#tau-prolog-version {
+    color: #48912c;
+    float: right;
+    position: relative;
+    top: 16px;
+}
+
+#tau-prolog-version.noserver {
+    color: #912c2c;
+}
