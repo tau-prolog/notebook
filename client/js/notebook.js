@@ -8,11 +8,16 @@ ws.onopen = function() {
 
 ws.onmessage = function(message) {
     var data = JSON.parse(message.data);
-    var result = document.getElementById("block-results-" + data.id);
-    var status = data.status ? "success" : "error";
-    var node = document.getElementById("block-result-" + data.execution);
-    add_class(node, "block-result-" + status);
-    node.innerHTML = "<span class=\"block-result-execution-order\">[" + data.execution + "]</span><span>" + data.content + "</span></div>";
+    if(data.type === "save") {
+
+    } else {
+        var result = document.getElementById("block-results-" + data.id);
+        var status = data.status ? "success" : "error";
+        var node = document.getElementById("block-result-" + data.execution);
+        node.setAttribute("data-result-type", status);
+        add_class(node, "block-result-" + status);
+        node.innerHTML = "<span class=\"block-result-execution-order\">[" + data.execution + "]</span><span class=\"block-result-content\">" + data.content + "</span></div>";
+    }
 };
 
 ws.onerror = function(data) {
@@ -98,11 +103,19 @@ function answer(id) {
     }));
 }
 
+function save() {
+    ws.send(JSON.stringify({
+        path: "." + window.location.pathname,
+        type: "save",
+        content: JSON.stringify(notebook_to_json())
+    }));
+}
+
 function add_consult_block(data) {
     var html = "";
     var id = ++last_tau_block_id;
-    html += "<div id=\"block-" + id + "\" class=\"block\">";
-    html += "<div class=\"block-info\"><div class=\"block-type\">#" + id + " " + data.type + " block</div></div>";
+    html += "<div id=\"block-" + id + "\" data-block-type=\"consult\" class=\"block\">";
+    html += "<div class=\"block-info\"><div class=\"block-type\">" + data.type + "</div></div>";
     html += "<div id=\"block-content-" + id + "\" class=\"block-content block-" + data.type + "\">";
     html += data.content;
     html += "</div>";
@@ -111,7 +124,7 @@ function add_consult_block(data) {
     html += "</div>";
     html += "<div id=\"block-results-" + id + "\" class=\"block-results\">";
     for(var j = 0; j < data.result.length; j++) {
-        html += "<div class=\"block-result\">" + data.result[j] + "</div>";
+        html += "<div data-result-type=\"" + data.result[j].type + "\" class=\"block-result block-result-" + data.result[j].type + "\"><span class=\"block-result-execution-order\">[" + data.result[j].id + "]</span><span class=\"block-result-content\">" + data.result[j].content + "</span></div>";
     }
     html += "</div>";
     html += "</div>";
@@ -121,8 +134,8 @@ function add_consult_block(data) {
 function add_query_block(data) {
     var html = "";
     var id = ++last_tau_block_id;
-    html += "<div id=\"block-" + id + "\" class=\"block\">";
-    html += "<div class=\"block-info\"><div class=\"block-type\">#" + id + " " + data.type + " block</div></div>";
+    html += "<div id=\"block-" + id + "\" data-block-type=\"query\" class=\"block\">";
+    html += "<div class=\"block-info\"><div class=\"block-type\">" + data.type + "</div></div>";
     html += "<div id=\"block-content-" + id + "\" class=\"block-content block-" + data.type + "\">";
     html += data.content;
     html += "</div>";
@@ -132,7 +145,7 @@ function add_query_block(data) {
     html += "</div>";
     html += "<div id=\"block-results-" + id + "\" class=\"block-results\">";
     for(var j = 0; j < data.result.length; j++) {
-        html += "<div class=\"block-result\">" + data.result[j] + "</div>";
+        html += "<div data-result-type=\"" + data.result[j].type + "\" class=\"block-result block-result-" + data.result[j].type + "\"><span class=\"block-result-execution-order\">[" + data.result[j].id + "]</span><span class=\"block-result-content\">" + data.result[j].content + "</span></div>";
     }
     html += "</div>";
     html += "</div>";
@@ -170,4 +183,36 @@ function add_class(elem, classname) {
 
 function remove_class(elem, classname) {
     elem.setAttribute("class", elem.getAttribute("class").replace(classname, ""));
+}
+
+function notebook_to_json() {
+    var object = {};
+    object.blocks = [];
+    var blocks = document.getElementsByClassName("block");
+    for(var i = 0; i < blocks.length; i++) {
+        var id = parseInt(blocks[i].getAttribute("id").replace("block-", ""));
+        var block_type = blocks[i].getAttribute("data-block-type");
+        var content = tau_mirrors[id].getValue();
+        var result = [];
+        var result_blocks = blocks[i].getElementsByClassName("block-result");
+        for(var j = 0; j < result_blocks.length; j++) {
+            var execution_order = parseInt(result_blocks[j]
+                .getElementsByClassName("block-result-execution-order")[0]
+                .innerHTML.replace("[", "").replace("]", ""));
+            var result_content = result_blocks[j].getElementsByClassName("block-result-content")[0].innerHTML;
+            var result_type = result_blocks[j].getAttribute("data-result-type");
+            result.push({
+                id: execution_order,
+                content: result_content,
+                type: result_type
+            });
+        }
+        object.blocks.push({
+            id: i+1,
+            type: block_type,
+            content: content,
+            result: result
+        });
+    }
+    return object;
 }

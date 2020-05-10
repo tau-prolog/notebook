@@ -21,10 +21,6 @@ function json_to_html(data) {
     return code;
 }
 
-function html_to_json(data) {
-
-}
-
 
 
 // HTTP SERVER
@@ -150,8 +146,22 @@ ws_server.on('request', function(request) {
                     status: !pl.type.is_error(answer) && answer != null && answer !== false
                 }));
             });
+        // save
+        } else if(data.type === "save") {
+            try {
+                fs.writeFile(data.path, data.content, function() {
+                    // send response
+                    connection.send(JSON.stringify({
+                        type: data.type,
+                        content: "saved",
+                        status: "success"
+                    }));
+                });
+            } catch(err) {
+                // An error occurred
+                console.error(err);
+            }
         }
-        
     });
 
     connection.on('close', function(connection) {

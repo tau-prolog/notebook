@@ -71,7 +71,7 @@ a:hover {
 
 .notebook .block-content {
     background-color: #ffffff;
-    border: 1px solid #eae2e5;
+    border: 1px solid #7b56b9;
     padding: 10px;
 }
 
@@ -80,9 +80,10 @@ a:hover {
 }
 
 .notebook .block-type {
-    background-color: #eae2e5;
-    color: #7b56b9;
+    background-color: #7b56b9;
+    color: #eae2e5;
     font-size: 15px;
+    font-weight: bold;
     float: left;
     text-align: center;
     padding: 5px 10px;
