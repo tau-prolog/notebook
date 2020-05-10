@@ -60,7 +60,7 @@ document.addEventListener("keypress", function(e) {
                 if(block !== null) {
                     var content = tau_mirrors[id].getValue();
                     add_consult_block({type: "consult", result: [], content: content, before: id});
-                    block.parentNode.removeChild(block);
+                    block.parentNode.parentNode.removeChild(block.parentNode);
                     document.getElementById("block-"+last_tau_block_id).click();
                 }
                 break;
@@ -69,7 +69,7 @@ document.addEventListener("keypress", function(e) {
                 if(block !== null) {
                     var content = tau_mirrors[id].getValue();
                     add_query_block({type: "query", result: [], content: content, before: id});
-                    block.parentNode.removeChild(block);
+                    block.parentNode.parentNode.removeChild(block.parentNode);
                     document.getElementById("block-"+last_tau_block_id).click();
                 }
                 break;
@@ -94,7 +94,7 @@ document.addEventListener("keypress", function(e) {
                 if(block !== null) {
                     var prev = block.parentNode.previousSibling;
                     var next = block.parentNode.nextSibling;
-                    block.parentNode.removeChild(block);
+                    block.parentNode.parentNode.removeChild(block.parentNode);
                     if(next !== null && next.getElementsByClassName("block").length === 1)
                         next.childNodes[0].click();
                     else if(prev !== null && prev.getElementsByClassName("block").length === 1)
@@ -112,6 +112,43 @@ document.addEventListener("keypress", function(e) {
         } else if(e.altKey && e.key === "," || e.key === "," || e.key === ";") {
             if(block_type === "query")
                 answer(id);
+        }
+    }
+});
+
+// keydown event for navigating between blocks
+document.addEventListener("keydown", function(e) {
+    if(tau_last_selected === -1 || !tau_mirrors[tau_last_selected].hasFocus()) {
+        var id = tau_last_selected;
+        var block = id !== -1 ? document.getElementById("block-"+id) : null;
+        var block_type = block !== null ? block.getAttribute("data-block-type") : null;
+        switch(e.key) {
+            // focus next block
+            case "2":
+            case "ArrowDown":
+                if(block !== null) {
+                    e.preventDefault();
+                    var next = block.parentNode.nextSibling;
+                    if(next !== null && next.getElementsByClassName("block").length === 1) {
+                        next.childNodes[0].click();
+                        if(!elementInViewport(next))
+                            next.childNodes[0].scrollIntoView();
+                    }
+                }
+                break;
+            // focus previous block
+            case "8":
+            case "ArrowUp":
+                if(block !== null) {
+                    e.preventDefault();
+                    var prev = block.parentNode.previousSibling;
+                    if(prev !== null && prev.getElementsByClassName("block").length === 1) {
+                        prev.childNodes[0].click();
+                        if(!elementInViewport(prev))
+                            prev.childNodes[0].scrollIntoView();
+                    }
+                }
+                break;
         }
     }
 });
@@ -266,6 +303,8 @@ function focus_block(id) {
     for(var i = 0; i < selected.length; i++)
         remove_class(selected[i], "block-selected");
     add_class(block, "block-selected");
+    if(!elementInViewport(block))
+        block.scrollIntoView();
 }
 
 function add_class(elem, classname) {
@@ -307,3 +346,21 @@ function notebook_to_json() {
     }
     return object;
 }
+
+function elementInViewport(block) {
+    var top = block.offsetTop;
+    var left = block.offsetLeft;
+    var width = block.offsetWidth;
+    var height = block.offsetHeight;
+    while(block.offsetParent) {
+        block = block.offsetParent;
+        top += block.offsetTop;
+        left += block.offsetLeft;
+    }
+    return (
+        top >= window.pageYOffset &&
+        left >= window.pageXOffset &&
+        (top + height) <= (window.pageYOffset + window.innerHeight) &&
+        (left + width) <= (window.pageXOffset + window.innerWidth)
+    );
+  }
