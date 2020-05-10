@@ -52,27 +52,63 @@ document.addEventListener("click", function() {
 document.addEventListener("keypress", function(e) {
     if(tau_last_selected === -1 || !tau_mirrors[tau_last_selected].hasFocus()) {
         var id = tau_last_selected;
-        var block = document.getElementById("block-"+id);
-        var block_type = block.getAttribute("data-block-type");
+        var block = id !== -1 ? document.getElementById("block-"+id) : null;
+        var block_type = block !== null ? block.getAttribute("data-block-type") : null;
         switch(e.key) {
-            // add consult block
+            // change block type to consult
             case "c":
-                add_consult_block({type: "consult", result: [], content: ""});
+                if(block !== null) {
+                    var content = tau_mirrors[id].getValue();
+                    add_consult_block({type: "consult", result: [], content: content, before: id});
+                    block.parentNode.removeChild(block);
+                    document.getElementById("block-"+last_tau_block_id).click();
+                }
                 break;
-            // add query block
+            // change block type to query
             case "q":
-                add_query_block({type: "query", result: [], content: ""});
+                if(block !== null) {
+                    var content = tau_mirrors[id].getValue();
+                    add_query_block({type: "query", result: [], content: content, before: id});
+                    block.parentNode.removeChild(block);
+                    document.getElementById("block-"+last_tau_block_id).click();
+                }
+                break;
+            // add block before
+            case "a":
+                add_consult_block({type: "consult", result: [], content: "", before: id});
+                document.getElementById("block-"+last_tau_block_id).click();
+                break;
+            // add block after
+            case "b":
+                add_consult_block({type: "consult", result: [], content: "", after: id});
+                document.getElementById("block-"+last_tau_block_id).click();
+                break;
+            // edit block
+            case "Enter":
+                if(!e.ctrlKey && block !== null) {
+                    tau_mirrors[id].focus();
+                }
                 break;
             // remove block
             case "x":
-                block.parentNode.removeChild(elem);
+                if(block !== null) {
+                    var prev = block.parentNode.previousSibling;
+                    var next = block.parentNode.nextSibling;
+                    block.parentNode.removeChild(block);
+                    if(next !== null && next.getElementsByClassName("block").length === 1)
+                        next.childNodes[0].click();
+                    else if(prev !== null && prev.getElementsByClassName("block").length === 1)
+                        prev.childNodes[0].click();
+                }
                 break;
         }
+        // consult program or query
         if(e.ctrlKey && e.key === "Enter") {
             if(block_type === "consult")
                 consult(id, tau_mirrors[id].getValue());
             else if(block_type === "query")
                 query(id, tau_mirrors[id].getValue());
+        // next answer
         } else if(e.altKey && e.key === "," || e.key === "," || e.key === ";") {
             if(block_type === "query")
                 answer(id);
@@ -170,7 +206,21 @@ function add_block(id, data, html) {
     var container = document.getElementById("notebook-container");
     var div = document.createElement("div");
     div.innerHTML = html;
-    container.appendChild(div);
+    if((data.before === undefined || data.before === -1) && (data.after === undefined || data.after === -1)) {
+        container.appendChild(div);
+    } else if(data.before !== undefined) {
+        var block = document.getElementById("block-"+data.before);
+        if(block !== null)
+            container.insertBefore(div, block.parentNode);
+        else
+            container.appendChild(div);
+    } else if(data.after !== undefined) {
+        var block = document.getElementById("block-"+data.after);
+        if(block !== null)
+            container.insertBefore(div, block.parentNode.nextSibling);
+        else
+            container.appendChild(div);
+    }
     var content = document.getElementById("block-content-" + id);
     content.innerHTML = "";
     tau_mirrors[id] = new CodeMirror(content, {
