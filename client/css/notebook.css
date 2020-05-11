@@ -24,6 +24,41 @@ a:hover {
 .header {
     background-color: #ffffff;
     border-bottom: 1px solid #eae2e5;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+.menu {
+    background-color: #efefef;
+    border-bottom: 1px solid #eae2e5;
+    box-shadow: 0px 5px 3px #dfdfdf;
+    left: 0;
+    color: #333333;
+    position: fixed;
+    top: 57px;
+    width: 100%;
+}
+
+.menu ul {
+    list-style-type: none;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+}
+
+.menu ul > li {
+    cursor: pointer;
+    float: left;
+    margin: 0;
+    padding: 10px 20px;
+}
+
+.menu ul > li:hover {
+    background-color: #fafafa;
+    color: #222222;
+    cursor: pointer;
 }
 
 #header-logo {
@@ -33,6 +68,7 @@ a:hover {
 .listing {
     background: white;
     margin: 50px 0;
+    margin-top: 150px;
 }
 
 #listing-container {
@@ -53,6 +89,7 @@ a:hover {
 .notebook {
     background: white;
     margin: 50px 0;
+    margin-top: 150px;
 }
 
 #notebook-container {
