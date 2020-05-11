@@ -28,6 +28,7 @@ a:hover {
     position: fixed;
     top: 0;
     width: 100%;
+    z-index: 4;
 }
 
 .menu {
@@ -39,6 +40,7 @@ a:hover {
     position: fixed;
     top: 57px;
     width: 100%;
+    z-index: 3;
 }
 
 .menu ul {
@@ -68,7 +70,7 @@ a:hover {
 .listing {
     background: white;
     margin: 50px 0;
-    margin-top: 150px;
+    margin-top: 80px;
 }
 
 #listing-container {
@@ -89,7 +91,7 @@ a:hover {
 .notebook {
     background: white;
     margin: 50px 0;
-    margin-top: 150px;
+    margin-top: 80px;
 }
 
 #notebook-container {
@@ -98,7 +100,9 @@ a:hover {
 }
 
 .notebook .block {
-    border: 1px solid #ffffff;
+    border: 0;
+    border-left: 5px solid #ffffff;
+    border-right: 5px solid #ffffff;
     padding: 20px;
 }
 
@@ -108,24 +112,33 @@ a:hover {
 
 .notebook .block-selected {
     background-color: #f9f5fb;
+    border-left: 5px solid #7b56b9;
+}
+
+.notebook .block-editing {
+    background-color: #f9f5fb;
+    border-left: 5px solid #047d65;
 }
 
 .notebook .block-content {
     background-color: #ffffff;
-    border: 1px solid #7b56b9;
+    border: 1px solid #bbb3b6;
     padding: 10px;
 }
 
 .notebook .block-info {
+    margin-top: -25px;
     overflow: hidden;
+    position: relative;
+    top: 28px;
+    z-index: 1;
 }
 
 .notebook .block-type {
-    background-color: #7b56b9;
-    color: #eae2e5;
+    color: #888888;
     font-size: 15px;
     font-weight: bold;
-    float: left;
+    float: right;
     text-align: center;
     padding: 5px 10px;
 }
@@ -134,11 +147,11 @@ a:hover {
     background-color: #ffffff;
     border: 1px solid #eae2e5;
     font-family: "monospace", "arial", "verdana";
-    margin: 5px 0;
+    margin: 10px 0;
     padding: 5px 0;
 }
 
-.notebook .block-result.block-result-markdown {
+.notebook .block-result-markdown {
     background-color: transparent !important;
     border: 0 !important;
     font-family: "arial", "verdana", "trebuchet ms" !important;
@@ -148,6 +161,7 @@ a:hover {
 
 .notebook .block-result > span {
     padding: 5px;
+    display: inline-block;
 }
 
 .notebook .block-result-execution-order {
@@ -160,7 +174,7 @@ a:hover {
 }
 
 .notebook .block-result-success {
-    background-color: #e3ffd7;
+    background-color: #f0ffe9;
     border-color: #55694d;
     color: #55694d;
 }
@@ -171,7 +185,7 @@ a:hover {
 }
 
 .notebook .block-result-error {
-    background-color: #ffeaea;
+    background-color: #fff2f2;
     border-color: #694d4d;
     color: #694d4d;
 }
@@ -179,62 +193,6 @@ a:hover {
 .notebook .block-result-error .block-result-execution-order {
     background-color: #694d4d;
     color: #ffffff;
-}
-
-.notebook .block-actions {
-    padding: 10px 0px;
-    text-align: right;
-}
-
-.notebook .block-action-button {
-    background-color: #3f81a0;
-    border: 1px solid #205269;
-    border-radius: 2px;
-    color: #ffffff;
-    cursor: pointer;
-    font-size: 15px;
-    font-family: arial, verdana, "trebuchet ms";
-    font-weight: bold;
-    margin-left: 10px;
-    padding: 7px 10px;
-    text-align: center;
-}
-
-.notebook .block-action-button:hover {
-    background-color: #5faace;
-}
-
-.notebook .block-action-button:active {
-    background-color: #205269;
-    outline: none;
-}
-
-.notebook .block-action-query {
-    background-color: #3f81a0;
-    border: 1px solid #205269;
-}
-
-.notebook .block-action-query:hover {
-    background-color: #5faace;
-}
-
-.notebook .block-action-query:active {
-    background-color: #205269;
-    outline: none;
-}
-
-.notebook .block-action-answer {
-    background-color: #5ba03f;
-    border: 1px solid #31641d;
-}
-
-.notebook .block-action-answer:hover {
-    background-color: #70c051;
-}
-
-.notebook .block-action-answer:active {
-    background-color: #31641d;
-    outline: none;
 }
 
 #tau-prolog-version {

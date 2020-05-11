@@ -104,6 +104,7 @@ document.addEventListener("keypress", function(e) {
                         document.getElementById("block-results-" + id).style.display = "none";
                     }
                     tau_mirrors[id].focus();
+                    tau_mirrors[id].setCursor(tau_mirrors[id].lineCount(), 0);
                 }
                 break;
             // remove block
@@ -320,11 +321,23 @@ function add_block(id, data, html, editor) {
                 if(block_type === "query")
                     answer(id);
             },
-            "Esc": function(_) {
+            "Esc": function(_instance) {
                 var block = document.getElementById("block-"+id);
                 block.focus();
             }
         }
+    });
+    tau_mirrors[id].on("focus", function(_instance, _e) {
+        var block = document.getElementById("block-"+id);
+        add_class(block, "block-editing");
+        var blocks = document.getElementsByClassName("block-selected");
+        for(var i = 0; i < blocks.length; i++)
+            if(blocks[i].getAttribute("id") !== "block-"+id)
+                remove_class(blocks[i], "block-selected");
+    });
+    tau_mirrors[id].on("blur", function(_instance, _e) {
+        var block = document.getElementById("block-"+id);
+        remove_class(block, "block-editing");
     });
     tau_mirrors[id].setSize("100%", "100%");
     var block = document.getElementById("block-" + id);
@@ -348,6 +361,7 @@ function edit_block(id) {
         document.getElementById("block-results-" + id).style.display = "none";
     }
     tau_mirrors[id].focus();
+    tau_mirrors[id].setCursor(tau_mirrors[id].lineCount(), 0);
 }
 
 function focus_block(id) {
