@@ -228,14 +228,11 @@ function save() {
 function add_consult_block(data) {
     var html = "";
     var id = ++last_tau_block_id;
-    html += "<div id=\"block-" + id + "\" onfocus=\"focus_block(" + id + ");\" tabindex=\"0\" data-block-type=\"consult\" class=\"block\">";
+    html += "<div id=\"block-" + id + "\" ondblclick=\"edit_block(" + id + ")\" onfocus=\"focus_block(" + id + ");\" tabindex=\"0\" data-block-type=\"consult\" class=\"block\">";
     html += "<div class=\"block-info\"><div class=\"block-type\">" + data.type + "</div></div>";
     html += "<div id=\"block-content-" + id + "\" class=\"block-content block-" + data.type + "\">";
     html += data.content;
     html += "</div>";
-    // html += "<div class=\"block-actions\">";
-    // html += "<input type=\"button\" class=\"block-action-button block-action-consult\" value=\"Consult\" onClick=\"consult(" + id + ", tau_mirrors[" + id + "].getValue());\" />";
-    // html += "</div>";
     html += "<div id=\"block-results-" + id + "\" class=\"block-results\">";
     for(var j = 0; j < data.result.length; j++) {
         html += "<div data-result-type=\"" + data.result[j].type + "\" class=\"block-result block-result-" + data.result[j].type + "\"><span class=\"block-result-execution-order\">[" + data.result[j].id + "]</span><span class=\"block-result-content\">" + data.result[j].content + "</span></div>";
@@ -248,15 +245,11 @@ function add_consult_block(data) {
 function add_query_block(data) {
     var html = "";
     var id = ++last_tau_block_id;
-    html += "<div id=\"block-" + id + "\" onfocus=\"focus_block(" + id + ");\" tabindex=\"0\" data-block-type=\"query\" class=\"block\">";
+    html += "<div id=\"block-" + id + "\" ondblclick=\"edit_block(" + id + ")\" onfocus=\"focus_block(" + id + ");\" tabindex=\"0\" data-block-type=\"query\" class=\"block\">";
     html += "<div class=\"block-info\"><div class=\"block-type\">" + data.type + "</div></div>";
     html += "<div id=\"block-content-" + id + "\" class=\"block-content block-" + data.type + "\">";
     html += data.content;
     html += "</div>";
-    // html += "<div class=\"block-actions\">";
-    // html += "<input type=\"button\" class=\"block-action-button block-action-query\" value=\"Query\" onClick=\"query(" + id + ", tau_mirrors[" + id + "].getValue());\" />";
-    // html += "<input type=\"button\" class=\"block-action-button block-action-answer\" value=\"Next answer\" onClick=\"answer(" + id + ");\" />";
-    // html += "</div>";
     html += "<div id=\"block-results-" + id + "\" class=\"block-results\">";
     for(var j = 0; j < data.result.length; j++) {
         html += "<div data-result-type=\"" + data.result[j].type + "\" class=\"block-result block-result-" + data.result[j].type + "\"><span class=\"block-result-execution-order\">[" + data.result[j].id + "]</span><span class=\"block-result-content\">" + data.result[j].content + "</span></div>";
@@ -270,7 +263,7 @@ function add_markdown_block(data, editor) {
     var editor = editor !== undefined ? editor : true;
     var html = "";
     var id = ++last_tau_block_id;
-    html += "<div id=\"block-" + id + "\" onfocus=\"focus_block(" + id + ");\" tabindex=\"0\" data-block-type=\"markdown\" class=\"block\">";
+    html += "<div id=\"block-" + id + "\" ondblclick=\"edit_block(" + id + ")\" onfocus=\"focus_block(" + id + ");\" tabindex=\"0\" data-block-type=\"markdown\" class=\"block\">";
     html += "<div id=\"block-editor-" + id + "\">";
     html += "<div class=\"block-info\"><div class=\"block-type\">" + data.type + "</div></div>";
     html += "<div id=\"block-content-" + id + "\" class=\"block-content block-" + data.type + "\">";
@@ -345,6 +338,16 @@ function add_block(id, data, html, editor) {
     });
     if(editor === true)
         document.getElementById("block-editor-" + id).style.display = "none";
+}
+
+function edit_block(id) {
+    var block = document.getElementById("block-"+id);
+    var block_type = block.getAttribute("data-block-type");
+    if(block_type === "markdown") {
+        document.getElementById("block-editor-" + id).style.display = "block";
+        document.getElementById("block-results-" + id).style.display = "none";
+    }
+    tau_mirrors[id].focus();
 }
 
 function focus_block(id) {
